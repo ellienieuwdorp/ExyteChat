@@ -8,14 +8,22 @@ public enum UserType: Int, Codable, Sendable {
     case current = 0, other, system
 }
 
-public struct User: Codable, Identifiable, Hashable, Sendable {
-    public let id: String
-    public let name: String
-    public let avatarURL: URL?
-    public let avatarCacheKey: String?
+public class User: ObservableObject, Codable, Identifiable {
+    private enum CodingKeys: CodingKey {
+        case id
+        case name
+        case avatarURL
+        case avatarCacheKey
+        case type
+    }
+
+    @Published public var id: String
+    @Published public var name: String
+    @Published public var avatarURL: URL?
+    @Published public var avatarCacheKey: String?
     public let type: UserType
     public var isCurrentUser: Bool { type == .current }
-    
+
     public init(id: String, name: String, avatarURL: URL?, avatarCacheKey: String? = nil, isCurrentUser: Bool) {
         self.id = id
         self.name = name
@@ -30,5 +38,43 @@ public struct User: Codable, Identifiable, Hashable, Sendable {
         self.avatarURL = avatarURL
         self.avatarCacheKey = avatarCacheKey
         self.type = type
+    }
+
+    required public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        avatarURL = try container.decode(URL?.self, forKey: .avatarURL)
+        avatarCacheKey = try container.decode(String?.self, forKey: .avatarCacheKey)
+        type = try container.decode(UserType.self, forKey: .type)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(name, forKey: .name)
+        try container.encode(avatarURL, forKey: .avatarURL)
+        try container.encode(avatarCacheKey, forKey: .avatarCacheKey)
+        try container.encode(type, forKey: .type)
+    }
+}
+
+extension User: Equatable {
+    public static func == (lhs: User, rhs: User) -> Bool {
+        lhs.id == rhs.id &&
+        lhs.name == rhs.name &&
+        lhs.avatarURL == rhs.avatarURL &&
+        lhs.avatarCacheKey == rhs.avatarCacheKey &&
+        lhs.isCurrentUser == rhs.isCurrentUser
+    }
+}
+
+extension User: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
+        hasher.combine(self.name)
+        hasher.combine(self.isCurrentUser)
+        hasher.combine(self.avatarURL)
+        hasher.combine(self.avatarCacheKey)
     }
 }
