@@ -4,7 +4,7 @@
 
 import Foundation
 
-public class User: ObservableObject, Codable, Identifiable {
+open class User: ObservableObject, Codable, Identifiable {
     private enum CodingKeys: CodingKey {
         case id
         case name
