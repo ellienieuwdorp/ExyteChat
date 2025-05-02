@@ -210,7 +210,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                     }
                 }
             }
-            .onChange(of: selectedMedia) {
+            .onChange(of: selectedMedia) { _ in
                 if let giphyMedia = selectedMedia {
                     inputViewModel.attachments.giphyMedia = giphyMedia
                     inputViewModel.send()
@@ -243,12 +243,12 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                 .environmentObject(keyboardState)
             }
         
-            .onChange(of: inputViewModel.showPicker) { _ , newValue in
+            .onChange(of: inputViewModel.showPicker) { newValue in
                 if newValue {
                     globalFocusState.focus = nil
                 }
             }
-            .onChange(of: inputViewModel.showGiphyPicker) { _ , newValue in
+            .onChange(of: inputViewModel.showGiphyPicker) { newValue in
                 if newValue {
                     globalFocusState.focus = nil
                 }
