@@ -57,7 +57,6 @@ open class Message: ObservableObject, Identifiable {
     @Published public var text: String
     @Published public var attachments: [Attachment]
     @Published public var reactions: [Reaction]
-    @Published public var giphyMediaId: String?
     @Published public var recording: Recording?
     @Published public var replyMessage: ReplyMessage?
 
@@ -69,7 +68,6 @@ open class Message: ObservableObject, Identifiable {
                 createdAt: Date = Date(),
                 text: String = "",
                 attachments: [Attachment] = [],
-                giphyMediaId: String? = nil,
                 reactions: [Reaction] = [],
                 recording: Recording? = nil,
                 replyMessage: ReplyMessage? = nil) {
@@ -80,7 +78,6 @@ open class Message: ObservableObject, Identifiable {
         self.createdAt = createdAt
         self.text = text
         self.attachments = attachments
-        self.giphyMediaId = giphyMediaId
         self.reactions = reactions
         self.recording = recording
         self.replyMessage = replyMessage
@@ -107,8 +104,6 @@ open class Message: ObservableObject, Identifiable {
                 }
             }
             
-            let giphyMediaId = draft.giphyMedia?.id
-            
             return Message(
                 id: id,
                 user: user,
@@ -116,7 +111,6 @@ open class Message: ObservableObject, Identifiable {
                 createdAt: draft.createdAt,
                 text: draft.text,
                 attachments: attachments,
-                giphyMediaId: giphyMediaId,
                 recording: draft.recording,
                 replyMessage: draft.replyMessage
             )
@@ -136,7 +130,6 @@ extension Message: Equatable {
         lhs.status == rhs.status &&
         lhs.createdAt == rhs.createdAt &&
         lhs.text == rhs.text &&
-        lhs.giphyMediaId == rhs.giphyMediaId &&
         lhs.attachments == rhs.attachments &&
         lhs.reactions == rhs.reactions &&
         lhs.recording == rhs.recording &&

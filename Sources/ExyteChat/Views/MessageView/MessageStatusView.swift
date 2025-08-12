@@ -65,7 +65,6 @@ struct SwiftUIView_Previews: PreviewProvider {
             id: nil,
             text: "",
             medias: [],
-            giphyMedia: nil,
             recording: nil,
             replyMessage: nil,
             createdAt: Date()
