@@ -13,6 +13,7 @@ open class User: ObservableObject, Codable, Identifiable {
         case id
         case name
         case avatarURL
+        case avatarData
         case avatarCacheKey
         case type
     }
@@ -20,22 +21,25 @@ open class User: ObservableObject, Codable, Identifiable {
     @Published public var id: String
     @Published public var name: String
     @Published public var avatarURL: URL?
+    @Published public var avatarData: Data?
     @Published public var avatarCacheKey: String?
     public let type: UserType
     public var isCurrentUser: Bool { type == .current }
 
-    public init(id: String, name: String, avatarURL: URL?, avatarCacheKey: String? = nil, isCurrentUser: Bool) {
+    public init(id: String, name: String, avatarURL: URL? = nil, avatarData: Data? = nil, avatarCacheKey: String? = nil, isCurrentUser: Bool) {
         self.id = id
         self.name = name
         self.avatarURL = avatarURL
+        self.avatarData = avatarData
         self.avatarCacheKey = avatarCacheKey
         self.type = isCurrentUser ? .current : .other
     }
     
-    public init(id: String, name: String, avatarURL: URL?, avatarCacheKey: String? = nil, type: UserType) {
+    public init(id: String, name: String, avatarURL: URL? = nil, avatarData: Data? = nil, avatarCacheKey: String? = nil, type: UserType) {
         self.id = id
         self.name = name
         self.avatarURL = avatarURL
+        self.avatarData = avatarData
         self.avatarCacheKey = avatarCacheKey
         self.type = type
     }
@@ -45,6 +49,7 @@ open class User: ObservableObject, Codable, Identifiable {
         id = try container.decode(String.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
         avatarURL = try container.decode(URL?.self, forKey: .avatarURL)
+        avatarData = try container.decode(Data?.self, forKey: .avatarData)
         avatarCacheKey = try container.decode(String?.self, forKey: .avatarCacheKey)
         type = try container.decode(UserType.self, forKey: .type)
     }
@@ -54,6 +59,7 @@ open class User: ObservableObject, Codable, Identifiable {
         try container.encode(id, forKey: .id)
         try container.encode(name, forKey: .name)
         try container.encode(avatarURL, forKey: .avatarURL)
+        try container.encode(avatarData, forKey: .avatarData)
         try container.encode(avatarCacheKey, forKey: .avatarCacheKey)
         try container.encode(type, forKey: .type)
     }
@@ -64,6 +70,7 @@ extension User: Equatable {
         lhs.id == rhs.id &&
         lhs.name == rhs.name &&
         lhs.avatarURL == rhs.avatarURL &&
+        lhs.avatarData == rhs.avatarData &&
         lhs.avatarCacheKey == rhs.avatarCacheKey &&
         lhs.isCurrentUser == rhs.isCurrentUser
     }
