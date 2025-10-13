@@ -156,7 +156,7 @@ public struct MessageView: View {
             if message.user.isCurrentUser, let status = message.status {
                 MessageStatusView(status: status) {
                     if case let .error(draft) = status {
-                        viewModel.sendMessage(draft)
+                        // Do nothing when the error status icon is clicked
                     }
                 }
                 .sizeGetter($statusSize)
