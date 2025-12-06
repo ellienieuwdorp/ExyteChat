@@ -21,7 +21,7 @@ open class User: ObservableObject, Codable, Identifiable {
     @Published open var name: String
     @Published open var avatarURL: URL?
     @Published open var avatarData: Data?
-    open let type: UserType
+    public let type: UserType
     open var isCurrentUser: Bool { type == .current }
 
     public init(id: String, name: String, avatarURL: URL? = nil, avatarData: Data? = nil, isCurrentUser: Bool) {
