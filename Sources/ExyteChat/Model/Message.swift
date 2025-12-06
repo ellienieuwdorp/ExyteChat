@@ -52,7 +52,7 @@ open class Message: ObservableObject, Identifiable {
     @Published public var id: String
     @Published open var user: User
     @Published open var status: Status?
-    @Published public var createdAt: Date
+    @Published open var createdAt: Date
 
     @Published open var text: String
     @Published open var attachments: [Attachment]
