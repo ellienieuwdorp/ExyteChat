@@ -9,7 +9,7 @@ public enum UserType: Int, Codable, Sendable {
 }
 
 open class User: ObservableObject, Codable, Identifiable {
-    private enum CodingKeys: CodingKey {
+    public enum CodingKeys: CodingKey {
         case id
         case name
         case avatarURL
@@ -18,11 +18,11 @@ open class User: ObservableObject, Codable, Identifiable {
     }
 
     @Published public var id: String
-    @Published public var name: String
-    @Published public var avatarURL: URL?
-    @Published public var avatarData: Data?
-    public let type: UserType
-    public var isCurrentUser: Bool { type == .current }
+    @Published open var name: String
+    @Published open var avatarURL: URL?
+    @Published open var avatarData: Data?
+    open let type: UserType
+    open var isCurrentUser: Bool { type == .current }
 
     public init(id: String, name: String, avatarURL: URL? = nil, avatarData: Data? = nil, isCurrentUser: Bool) {
         self.id = id
