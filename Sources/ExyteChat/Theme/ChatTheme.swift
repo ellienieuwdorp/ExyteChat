@@ -280,7 +280,6 @@ public struct ChatTheme {
 
         public struct Message {
             public var attachedDocument: Image
-            public var cancel: Image
             public var error: Image
             public var muteVideo: Image
             public var pauseAudio: Image
@@ -354,7 +353,6 @@ public struct ChatTheme {
             chevronRight: Image? = nil,
             cross: Image? = nil,
             attachedDocument: Image? = nil,
-            cancel: Image? = nil,
             error: Image? = nil,
             muteVideo: Image? = nil,
             pauseAudio: Image? = nil,
@@ -424,7 +422,6 @@ public struct ChatTheme {
 
             self.message = Message(
                 attachedDocument: attachedDocument ?? Image("attachedDocument", bundle: .current),
-                cancel: cancel ?? Image(systemName: "xmark.circle.fill"),
                 error: error ?? Image(systemName: "exclamationmark.circle.fill"),
                 muteVideo: muteVideo ?? Image("muteVideo", bundle: .current),
                 pauseAudio: pauseAudio ?? Image("pauseAudio", bundle: .current),

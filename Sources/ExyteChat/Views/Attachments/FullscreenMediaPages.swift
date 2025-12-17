@@ -56,10 +56,8 @@ struct FullscreenMediaPages: View {
                     if viewModel.showMinis {
                         ScrollView(.horizontal) {
                             HStack(spacing: 2) {
-                                ForEach(viewModel.attachments
-                                    .filter { $0.fullUploadStatus == nil || $0.fullUploadStatus == .complete  }
-                                    .enumerated().map({ $0 }), id: \.offset) { (index, attachment) in
-                                    AttachmentCell(attachment: attachment, size: CGSize(width: 100, height: 100)) { _,_ in
+                                ForEach(viewModel.attachments.enumerated().map({ $0 }), id: \.offset) { (index, attachment) in
+                                    AttachmentCell(attachment: attachment, size: CGSize(width: 100, height: 100)) { _ in
                                         withAnimation {
                                             viewModel.index = index
                                         }
