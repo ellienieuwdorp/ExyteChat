@@ -29,41 +29,16 @@ public enum AttachmentType: String, Codable, Sendable {
 }
 
 public struct Attachment: Codable, Identifiable, Hashable, Sendable {
-    
-    public enum UploadStatus: Sendable, Codable, Hashable {
-        case inProgress(Int?) // value = percent upto 99%, nil no percent shown, progress indicator only
-        case complete
-        case cancelled
-        case error
-        
-        public static func == (lhs: UploadStatus, rhs: UploadStatus) -> Bool {
-            switch (lhs, rhs) {
-            case (.error, .error):
-                return true
-            case (.complete, .complete):
-                return true
-            case (.cancelled, .cancelled):
-                return true
-            case (.inProgress(let lhsPercent), .inProgress(let rhsPercent)):
-                return lhsPercent == rhsPercent
-            default:
-                return false
-            }
-        }
-    }
-    
-    
     public let id: String
     public let thumbnail: URL
     public let full: URL
-    public let fullUploadStatus: UploadStatus?
     public let type: AttachmentType
     public let mimeType: String?
     public let thumbnailCacheKey: String?
     public let fullCacheKey: String?
 
     public init(id: String, thumbnail: URL, full: URL, type: AttachmentType, mimeType: String? = nil,
-                thumbnailCacheKey: String? = nil, fullCacheKey: String? = nil, fullUploadStatus: UploadStatus? = nil) {
+                thumbnailCacheKey: String? = nil, fullCacheKey: String? = nil) {
         self.id = id
         self.thumbnail = thumbnail
         self.full = full
@@ -71,7 +46,6 @@ public struct Attachment: Codable, Identifiable, Hashable, Sendable {
         self.mimeType = mimeType
         self.thumbnailCacheKey = thumbnailCacheKey
         self.fullCacheKey = fullCacheKey
-        self.fullUploadStatus = fullUploadStatus
     }
 
     public init(id: String, url: URL, type: AttachmentType, mimeType: String? = nil, cacheKey: String? = nil) {
@@ -82,7 +56,6 @@ public struct Attachment: Codable, Identifiable, Hashable, Sendable {
         id: String? = nil,
         thumbnail: URL? = nil,
         full: URL? = nil,
-        fullUploadStatus: UploadStatus? = nil,
         type: AttachmentType? = nil,
         mimeType: String? = nil,
         thumbnailCacheKey: String? = nil,
@@ -95,8 +68,7 @@ public struct Attachment: Codable, Identifiable, Hashable, Sendable {
             type: type ?? self.type,
             mimeType: mimeType ?? self.mimeType,
             thumbnailCacheKey: thumbnailCacheKey ?? self.thumbnailCacheKey,
-            fullCacheKey: fullCacheKey ?? self.fullCacheKey,
-            fullUploadStatus: fullUploadStatus ?? self.fullUploadStatus
+            fullCacheKey: fullCacheKey ?? self.fullCacheKey
         )
     }
 }

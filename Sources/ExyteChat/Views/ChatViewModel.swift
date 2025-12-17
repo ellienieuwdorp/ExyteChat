@@ -23,8 +23,7 @@ public final class ChatViewModel: ObservableObject {
     
     let inputFieldId = UUID()
 
-    var didSendMessage: (DraftMessage) -> Void = {_ in }
-    var didUpdateAttachmentStatus: (AttachmentUploadUpdate) -> Void = { _ in }
+    var didSendMessage: (DraftMessage) -> Void = {_ in}
     var inputViewModel: InputViewModel?
     var globalFocusState: GlobalFocusState?
 
@@ -36,10 +35,6 @@ public final class ChatViewModel: ObservableObject {
     func dismissAttachmentFullScreen() {
         fullscreenAttachmentPresented = false
         fullscreenAttachmentItem = nil
-    }
-    
-    func updateAttachmentStatus(_ uploadUpdate: AttachmentUploadUpdate) {
-      didUpdateAttachmentStatus(uploadUpdate)
     }
 
     func sendMessage(_ message: DraftMessage) {
