@@ -14,26 +14,24 @@ struct MessageStatusView: View {
     var body: some View {
         Group {
             switch status {
-            case .sending, .sent, .delivered:
-              getImagge(status)
-                    .renderingMode(.template)
+            case .sending:
+                theme.images.message.sending
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
                     .foregroundColor(getTheme().colors.statusGray)
-                    .frame(width: 40)
-            case .read:
-              getImagge(status)
-                    .renderingMode(.template)
+            case .sent:
+                theme.images.message.sent
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .foregroundColor(getTheme().colors.messageReadStatus)
-                    .frame(width: 40)
+                    .foregroundColor(getTheme().colors.messageMyBG)
+            case .read:
+                theme.images.message.read
+                    .resizable()
+                    .foregroundColor(getTheme().colors.messageMyBG)
             case .error:
-                Button(action: onRetry) {
+                Button {
+                    onRetry()
+                } label: {
                     getTheme().images.message.error
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 40)
                 }
                 .foregroundColor(theme.colors.statusError)
             }
@@ -42,20 +40,10 @@ struct MessageStatusView: View {
         .padding(.trailing, MessageView.horizontalStatusPadding)
     }
 
-    private func getImagge(_ status: Message.Status) -> Image {
-        switch status {
-        case .sending: return theme.images.message.sending
-        case .sent: return theme.images.message.sent
-        case .delivered: return theme.images.message.delivered
-        case .read: return theme.images.message.read
-        case .error: return theme.images.message.error
-        }
-    }
-
     @MainActor
-    private func getTheme() -> ChatTheme {
-        return theme
-    }
+        private func getTheme() -> ChatTheme {
+            return theme
+        }
 }
 
 struct SwiftUIView_Previews: PreviewProvider {
@@ -63,9 +51,7 @@ struct SwiftUIView_Previews: PreviewProvider {
         VStack {
             MessageStatusView(status: .sending, onRetry: {})
             MessageStatusView(status: .sent, onRetry: {})
-            MessageStatusView(status: .delivered, onRetry: {})
             MessageStatusView(status: .read, onRetry: {})
         }
     }
 }
-
