@@ -150,58 +150,19 @@ extension Message: Hashable {
     }
 }
 
-public class Recording: ObservableObject, Codable {
-    private enum CodingKeys: CodingKey {
-        case duration
-        case waveformSamples
-        case url
-        case mimeType
-    }
-
-    @Published public var duration: Double
-    @Published public var waveformSamples: [CGFloat]
-    @Published public var url: URL?
-    @Published public var mimeType: String?
+// Keep `Recording` a struct, to avoid a bug where the displayed time in the
+// audio recorder doesn't get updated unless the user presses one of the buttons
+public struct Recording: Codable, Hashable, Sendable {
+    public var duration: Double
+    public var waveformSamples: [CGFloat]
+    public var url: URL?
+    public var mimeType: String?
 
     public init(duration: Double = 0.0, waveformSamples: [CGFloat] = [], url: URL? = nil, mimeType: String? = nil) {
         self.duration = duration
         self.waveformSamples = waveformSamples
         self.url = url
         self.mimeType = mimeType
-    }
-
-    required public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        duration = try container.decode(Double.self, forKey: .duration)
-        waveformSamples = try container.decode([CGFloat].self, forKey: .waveformSamples)
-        url = try container.decode(URL?.self, forKey: .url)
-        mimeType = try container.decode(String?.self, forKey: .mimeType)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(duration, forKey: .duration)
-        try container.encode(waveformSamples, forKey: .waveformSamples)
-        try container.encode(url, forKey: .url)
-        try container.encode(mimeType, forKey: .mimeType)
-    }
-}
-
-extension Recording: Equatable {
-    public static func == (lhs: Recording, rhs: Recording) -> Bool {
-        lhs.duration == rhs.duration &&
-        lhs.waveformSamples == rhs.waveformSamples &&
-        lhs.url == rhs.url &&
-        lhs.mimeType == rhs.mimeType
-    }
-}
-
-extension Recording: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(self.duration)
-        hasher.combine(self.waveformSamples)
-        hasher.combine(self.url)
-        hasher.combine(self.mimeType)
     }
 }
 
