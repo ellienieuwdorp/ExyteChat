@@ -18,7 +18,7 @@ struct AvatarImageView: View {
                 .viewSize(avatarSize)
                 .clipShape(Circle())
         } else {
-            CachedAsyncImage(url: user?.avatarURL, cacheKey: avatarCacheKey) { image in
+            AsyncImage(url: user?.avatarURL) { image in
                 image
                     .resizable()
                     .scaledToFill()

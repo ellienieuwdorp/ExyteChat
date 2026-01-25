@@ -22,10 +22,6 @@ let package = Package(
             url: "https://github.com/exyte/ActivityIndicatorView",
             from: "1.0.0"
         ),
-        .package(
-            url: "https://github.com/onevcat/Kingfisher",
-            from: "8.5.0"
-        ),
     ],
     targets: [
         .target(
@@ -33,7 +29,6 @@ let package = Package(
             dependencies: [
                 .product(name: "ExyteMediaPicker", package: "MediaPicker"),
                 .product(name: "ActivityIndicatorView", package: "ActivityIndicatorView"),
-                .product(name: "Kingfisher", package: "Kingfisher")
             ],
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency")

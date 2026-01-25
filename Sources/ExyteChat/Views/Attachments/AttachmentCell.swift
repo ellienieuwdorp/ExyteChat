@@ -59,10 +59,7 @@ struct AsyncImageView: View {
     let size: CGSize
 
     var body: some View {
-        CachedAsyncImage(
-            url: attachment.thumbnail,
-            cacheKey: attachment.thumbnailCacheKey
-        ) { imageView in
+        AsyncImage(url: attachment.thumbnail) { imageView in
             imageView
                 .resizable()
                 .scaledToFill()

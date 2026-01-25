@@ -13,18 +13,12 @@ struct AttachmentsPage: View {
 
     var body: some View {
         if attachment.type == .image {
-            CachedAsyncImage(
-                url: attachment.full,
-                cacheKey: attachment.fullCacheKey
-            ) { phase in
-                switch phase {
-                case let .success(image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                default:
-                    ActivityIndicator()
-                }
+            AsyncImage(url: attachment.full) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } placeholder: {
+                ActivityIndicator()
             }
         } else if attachment.type == .video {
             VideoView(viewModel: VideoViewModel(attachment: attachment))
