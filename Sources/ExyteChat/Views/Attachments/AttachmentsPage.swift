@@ -3,6 +3,7 @@
 //
 
 import SwiftUI
+import SVGView
 
 struct AttachmentsPage: View {
 
@@ -12,7 +13,9 @@ struct AttachmentsPage: View {
     let attachment: Attachment
 
     var body: some View {
-        if attachment.type == .image {
+        if let mimeType = attachment.mimeType, mimeType.starts(with: "image/svg") {
+            SVGView(contentsOf: attachment.full)
+        } else if attachment.type == .image {
             AsyncImage(url: attachment.full) { image in
                 image
                     .resizable()
