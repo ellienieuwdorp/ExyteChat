@@ -34,7 +34,11 @@ struct TextInputView: View {
         if #available(iOS 17.0, macOS 14.0, tvOS 17.0, *) {
             textField
                 .onKeyPress(.return, phases: .down) { keyPress in
-                    if onHardwareReturnKeyPress(keyPress.modifiers.contains(.shift)) {
+                    let modifiers = keyPress.modifiers
+                    if modifiers != [] && modifiers != .shift {
+                        return .ignored
+                    }
+                    if onHardwareReturnKeyPress(modifiers == .shift) {
                         return .handled
                     }
                     return .ignored
