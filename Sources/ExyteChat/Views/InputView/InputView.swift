@@ -98,15 +98,6 @@ struct InputView: View {
         viewModel.state
     }
 
-    private var shouldEnableHardwareEnterSend: Bool {
-        shouldSendOnHardwareEnter(
-            for: hardwareEnterBehavior,
-            state: state,
-            isSoftwareKeyboardVisible: keyboardState.isShown,
-            isShiftModified: false
-        )
-    }
-
     private func sendFromKeyboard() {
         onAction(.send)
         DispatchQueue.main.async {
@@ -192,12 +183,8 @@ struct InputView: View {
                     inputFieldId: inputFieldId,
                     style: style,
                     availableInputs: availableInputs,
-                    localization: localization
-                ) {
-                    if shouldEnableHardwareEnterSend {
-                        sendFromKeyboard()
-                    }
-                } onHardwareReturnKeyPress: { isShiftModified in
+                    localization: localization,
+                    onHardwareReturnKeyPress: { isShiftModified in
                     if shouldSendOnHardwareEnter(
                         for: hardwareEnterBehavior,
                         state: state,
@@ -208,7 +195,7 @@ struct InputView: View {
                         return true
                     }
                     return false
-                }
+                })
             }
         }
         .frame(minHeight: 48)
