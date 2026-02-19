@@ -98,15 +98,10 @@ struct InputView: View {
         viewModel.state
     }
 
-    private var isInputFocused: Bool {
-        globalFocusState.focus == .uuid(inputFieldId)
-    }
-
     private var shouldEnableHardwareEnterSend: Bool {
         shouldSendOnHardwareEnter(
             for: hardwareEnterBehavior,
             state: state,
-            isInputFocused: isInputFocused,
             isSoftwareKeyboardVisible: keyboardState.isShown
         )
     }
@@ -604,13 +599,14 @@ struct InputView: View {
 func shouldSendOnHardwareEnter(
     for behavior: HardwareEnterBehavior,
     state: InputViewState,
-    isInputFocused: Bool,
     isSoftwareKeyboardVisible: Bool
 ) -> Bool {
     guard behavior == .sendOnEnterShiftNewline else {
         return false
     }
-    return state.canSend && isInputFocused && !isSoftwareKeyboardVisible
+    // `TextInputView.onSubmit` only fires from the active composer, so an extra
+    // focus check here is both redundant and can race on macOS/Catalyst.
+    return state.canSend && !isSoftwareKeyboardVisible
 }
 
 @MainActor

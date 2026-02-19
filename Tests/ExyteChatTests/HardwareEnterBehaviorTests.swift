@@ -13,25 +13,12 @@ import Testing
 struct HardwareEnterBehaviorTests {
     typealias ConcreteChatView = ChatView<EmptyView, EmptyView, DefaultMessageMenuAction>
 
-    @Test("Hardware Enter sends only when send behavior is enabled, input is focused, and the composer can send")
-    func shouldSendOnHardwareEnterOnlyIfAllConditionsAreMet() {
+    @Test("Hardware Enter sends only when send behavior is enabled and the composer can send")
+    func shouldSendOnHardwareEnterOnlyIfCanSendAndBehaviorEnabled() {
         #expect(
             shouldSendOnHardwareEnter(
                 for: .sendOnEnterShiftNewline,
                 state: .hasTextOrMedia,
-                isInputFocused: true,
-                isSoftwareKeyboardVisible: false
-            )
-        )
-    }
-
-    @Test("Hardware Enter does not send when input is not focused")
-    func shouldNotSendWhenInputIsNotFocused() {
-        #expect(
-            !shouldSendOnHardwareEnter(
-                for: .sendOnEnterShiftNewline,
-                state: .hasTextOrMedia,
-                isInputFocused: false,
                 isSoftwareKeyboardVisible: false
             )
         )
@@ -43,7 +30,6 @@ struct HardwareEnterBehaviorTests {
             !shouldSendOnHardwareEnter(
                 for: .sendOnEnterShiftNewline,
                 state: .empty,
-                isInputFocused: true,
                 isSoftwareKeyboardVisible: false
             )
         )
@@ -55,7 +41,6 @@ struct HardwareEnterBehaviorTests {
             !shouldSendOnHardwareEnter(
                 for: .insertNewline,
                 state: .hasTextOrMedia,
-                isInputFocused: true,
                 isSoftwareKeyboardVisible: false
             )
         )
@@ -67,7 +52,6 @@ struct HardwareEnterBehaviorTests {
             !shouldSendOnHardwareEnter(
                 for: .sendOnEnterShiftNewline,
                 state: .hasTextOrMedia,
-                isInputFocused: true,
                 isSoftwareKeyboardVisible: true
             )
         )
