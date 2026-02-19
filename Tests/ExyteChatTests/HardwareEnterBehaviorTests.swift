@@ -19,7 +19,8 @@ struct HardwareEnterBehaviorTests {
             shouldSendOnHardwareEnter(
                 for: .sendOnEnterShiftNewline,
                 state: .hasTextOrMedia,
-                isSoftwareKeyboardVisible: false
+                isSoftwareKeyboardVisible: false,
+                isShiftModified: false
             )
         )
     }
@@ -30,7 +31,8 @@ struct HardwareEnterBehaviorTests {
             !shouldSendOnHardwareEnter(
                 for: .sendOnEnterShiftNewline,
                 state: .empty,
-                isSoftwareKeyboardVisible: false
+                isSoftwareKeyboardVisible: false,
+                isShiftModified: false
             )
         )
     }
@@ -41,7 +43,8 @@ struct HardwareEnterBehaviorTests {
             !shouldSendOnHardwareEnter(
                 for: .insertNewline,
                 state: .hasTextOrMedia,
-                isSoftwareKeyboardVisible: false
+                isSoftwareKeyboardVisible: false,
+                isShiftModified: false
             )
         )
     }
@@ -52,7 +55,20 @@ struct HardwareEnterBehaviorTests {
             !shouldSendOnHardwareEnter(
                 for: .sendOnEnterShiftNewline,
                 state: .hasTextOrMedia,
-                isSoftwareKeyboardVisible: true
+                isSoftwareKeyboardVisible: true,
+                isShiftModified: false
+            )
+        )
+    }
+
+    @Test("Hardware Shift+Enter does not send and should insert newline instead")
+    func shouldNotSendWhenShiftModifierIsPressed() {
+        #expect(
+            !shouldSendOnHardwareEnter(
+                for: .sendOnEnterShiftNewline,
+                state: .hasTextOrMedia,
+                isSoftwareKeyboardVisible: false,
+                isShiftModified: true
             )
         )
     }

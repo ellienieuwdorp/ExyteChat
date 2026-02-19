@@ -102,8 +102,16 @@ struct InputView: View {
         shouldSendOnHardwareEnter(
             for: hardwareEnterBehavior,
             state: state,
-            isSoftwareKeyboardVisible: keyboardState.isShown
+            isSoftwareKeyboardVisible: keyboardState.isShown,
+            isShiftModified: false
         )
+    }
+
+    private func sendFromKeyboard() {
+        onAction(.send)
+        DispatchQueue.main.async {
+            globalFocusState.focus = .uuid(inputFieldId)
+        }
     }
     
     @State private var overlaySize: CGSize = .zero
@@ -187,11 +195,19 @@ struct InputView: View {
                     localization: localization
                 ) {
                     if shouldEnableHardwareEnterSend {
-                        onAction(.send)
-                        DispatchQueue.main.async {
-                            globalFocusState.focus = .uuid(inputFieldId)
-                        }
+                        sendFromKeyboard()
                     }
+                } onHardwareReturnKeyPress: { isShiftModified in
+                    if shouldSendOnHardwareEnter(
+                        for: hardwareEnterBehavior,
+                        state: state,
+                        isSoftwareKeyboardVisible: keyboardState.isShown,
+                        isShiftModified: isShiftModified
+                    ) {
+                        sendFromKeyboard()
+                        return true
+                    }
+                    return false
                 }
             }
         }
@@ -599,9 +615,13 @@ struct InputView: View {
 func shouldSendOnHardwareEnter(
     for behavior: HardwareEnterBehavior,
     state: InputViewState,
-    isSoftwareKeyboardVisible: Bool
+    isSoftwareKeyboardVisible: Bool,
+    isShiftModified: Bool
 ) -> Bool {
     guard behavior == .sendOnEnterShiftNewline else {
+        return false
+    }
+    guard !isShiftModified else {
         return false
     }
     // `TextInputView.onSubmit` only fires from the active composer, so an extra
