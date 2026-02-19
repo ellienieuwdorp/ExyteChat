@@ -15,6 +15,7 @@ struct TextInputView: View {
     var style: InputViewStyle
     var availableInputs: [AvailableInputType]
     var localization: ChatLocalization
+    var onSubmit: () -> Void = {}
     
     var body: some View {
         TextField("", text: $text, prompt: Text(style == .message ? localization.inputPlaceholder : localization.signatureText)
@@ -23,6 +24,7 @@ struct TextInputView: View {
             .foregroundColor(style == .message ? theme.colors.inputText : theme.colors.inputSignatureText)
             .padding(.vertical, 10)
             .padding(.leading, !isMediaAvailable() ? 12 : 0)
+            .onSubmit(onSubmit)
             .simultaneousGesture(
                 TapGesture().onEnded {
                     globalFocusState.focus = .uuid(inputFieldId)
@@ -34,4 +36,3 @@ struct TextInputView: View {
         return availableInputs.contains(AvailableInputType.media)
     }
 }
-

@@ -127,6 +127,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
     var messageLinkPreviewLimit = 8
     var messageFont = UIFontMetrics.default.scaledFont(for: UIFont.systemFont(ofSize: 15))
     var availableInputs: [AvailableInputType] = [.text, .audio, .media]
+    var hardwareEnterBehavior: HardwareEnterBehavior = .insertNewline
     var recorderSettings: RecorderSettings = RecorderSettings()
     var listSwipeActions: ListSwipeActions = ListSwipeActions()
     var keyboardDismissMode: UIScrollView.KeyboardDismissMode = .none
@@ -200,6 +201,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                     mediaPickerSelectionParameters: mediaPickerSelectionParameters,
                     mediaPickerParameters: mediaPickerParameters,
                     availableInputs: availableInputs,
+                    hardwareEnterBehavior: hardwareEnterBehavior,
                     localization: localization
                 )
                 .environmentObject(globalFocusState)
@@ -365,6 +367,7 @@ public struct ChatView<MessageContent: View, InputViewContent: View, MenuAction:
                     inputFieldId: viewModel.inputFieldId,
                     style: .message,
                     availableInputs: availableInputs,
+                    hardwareEnterBehavior: hardwareEnterBehavior,
                     messageStyler: messageStyler,
                     recorderSettings: recorderSettings,
                     localization: localization
@@ -668,6 +671,12 @@ public extension ChatView {
     func setRecorderSettings(_ settings: RecorderSettings) -> ChatView {
         var view = self
         view.recorderSettings = settings
+        return view
+    }
+
+    func setHardwareEnterBehavior(_ behavior: HardwareEnterBehavior) -> ChatView {
+        var view = self
+        view.hardwareEnterBehavior = behavior
         return view
     }
     

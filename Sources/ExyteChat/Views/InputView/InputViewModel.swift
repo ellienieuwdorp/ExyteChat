@@ -21,6 +21,7 @@ final class InputViewModel: ObservableObject {
 
     var recordingPlayer: RecordingPlayer?
     var didSendMessage: ((DraftMessage) -> Void)?
+    let signatureInputFieldId = UUID()
 
     private var recorder = Recorder()
 

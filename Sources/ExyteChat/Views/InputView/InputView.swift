@@ -60,6 +60,11 @@ public enum AvailableInputType: Sendable {
     case audio
 }
 
+public enum HardwareEnterBehavior: Sendable {
+    case sendOnEnterShiftNewline
+    case insertNewline
+}
+
 public struct InputViewAttachments {
     var medias: [Media] = []
     var recording: Recording?
@@ -72,11 +77,13 @@ struct InputView: View {
     @Environment(\.mediaPickerTheme) private var pickerTheme
 
     @EnvironmentObject private var keyboardState: KeyboardState
-    
+    @EnvironmentObject private var globalFocusState: GlobalFocusState
+
     @ObservedObject var viewModel: InputViewModel
     var inputFieldId: UUID
     var style: InputViewStyle
     var availableInputs: [AvailableInputType]
+    var hardwareEnterBehavior: HardwareEnterBehavior
     var messageStyler: (String) -> AttributedString
     var recorderSettings: RecorderSettings = RecorderSettings()
     var localization: ChatLocalization
@@ -89,6 +96,19 @@ struct InputView: View {
     
     private var state: InputViewState {
         viewModel.state
+    }
+
+    private var isInputFocused: Bool {
+        globalFocusState.focus == .uuid(inputFieldId)
+    }
+
+    private var shouldEnableHardwareEnterSend: Bool {
+        shouldSendOnHardwareEnter(
+            for: hardwareEnterBehavior,
+            state: state,
+            isInputFocused: isInputFocused,
+            isSoftwareKeyboardVisible: keyboardState.isShown
+        )
     }
     
     @State private var overlaySize: CGSize = .zero
@@ -170,7 +190,14 @@ struct InputView: View {
                     style: style,
                     availableInputs: availableInputs,
                     localization: localization
-                )
+                ) {
+                    if shouldEnableHardwareEnterSend {
+                        onAction(.send)
+                        DispatchQueue.main.async {
+                            globalFocusState.focus = .uuid(inputFieldId)
+                        }
+                    }
+                }
             }
         }
         .frame(minHeight: 48)
@@ -572,6 +599,18 @@ struct InputView: View {
     private func isMediaAvailable() -> Bool {
         return availableInputs.contains(AvailableInputType.media)
     }
+}
+
+func shouldSendOnHardwareEnter(
+    for behavior: HardwareEnterBehavior,
+    state: InputViewState,
+    isInputFocused: Bool,
+    isSoftwareKeyboardVisible: Bool
+) -> Bool {
+    guard behavior == .sendOnEnterShiftNewline else {
+        return false
+    }
+    return state.canSend && isInputFocused && !isSoftwareKeyboardVisible
 }
 
 @MainActor

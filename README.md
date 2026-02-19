@@ -308,6 +308,9 @@ By default the built-in MediaPicker will be auto-customized using the most logic
     - `.textAndMedia`   
     - `.textAndAudio`   
     - `.textOnly`    
+`setHardwareEnterBehavior` - customize hardware keyboard Return behavior:   
+    - `.sendOnEnterShiftNewline` - Enter sends (while focused and send is enabled), Shift+Enter inserts newline   
+    - `.insertNewline` - Enter inserts newline (default)
   
 <img src="https://raw.githubusercontent.com/exyte/media/master/Chat/pic2.png" width="300">
 
@@ -374,4 +377,3 @@ dependencies: [
 [FlagAndCountryCode](https://github.com/exyte/FlagAndCountryCode) - Phone codes and flags for every country    
 [SVGView](https://github.com/exyte/SVGView) - SVG parser    
 [LiquidSwipe](https://github.com/exyte/LiquidSwipe) - Liquid navigation animation
-

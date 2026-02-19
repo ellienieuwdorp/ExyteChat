@@ -29,6 +29,7 @@ struct AttachmentsEditor<InputViewContent: View>: View {
     var mediaPickerSelectionParameters: MediaPickerSelectionParameters?
     var mediaPickerParameters: MediaPickerParameters?
     var availableInputs: [AvailableInputType]
+    var hardwareEnterBehavior: HardwareEnterBehavior
     var localization: ChatLocalization
 
     @State private var seleсtedMedias: [Media] = []
@@ -135,13 +136,14 @@ struct AttachmentsEditor<InputViewContent: View>: View {
                 ) {
                     globalFocusState.focus = nil
                 }
-                .customFocus($globalFocusState.focus, equals: .uuid(UUID()))
+                .customFocus($globalFocusState.focus, equals: .uuid(inputViewModel.signatureInputFieldId))
             } else {
                 InputView(
                     viewModel: inputViewModel,
-                    inputFieldId: UUID(),
+                    inputFieldId: inputViewModel.signatureInputFieldId,
                     style: .signature,
                     availableInputs: availableInputs,
+                    hardwareEnterBehavior: hardwareEnterBehavior,
                     messageStyler: messageStyler,
                     localization: localization
                 )
