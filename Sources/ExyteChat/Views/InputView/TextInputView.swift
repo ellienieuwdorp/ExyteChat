@@ -29,6 +29,7 @@ struct TextInputView: View {
             placeholderColor: UIColor(style == .message ? theme.colors.inputPlaceholderText : theme.colors.inputSignaturePlaceholderText),
             onHardwareReturnKeyPress: onHardwareReturnKeyPress
         )
+        .frame(maxWidth: .infinity, alignment: .leading)
         .customFocus($globalFocusState.focus, equals: .uuid(inputFieldId))
         .padding(.vertical, 10)
         .padding(.leading, !isMediaAvailable() ? 12 : 0)
@@ -70,6 +71,7 @@ struct TextInputView: View {
                 placeholderColor: UIColor(style == .message ? theme.colors.inputPlaceholderText : theme.colors.inputSignaturePlaceholderText),
                 onHardwareReturnKeyPress: onHardwareReturnKeyPress
             )
+            .frame(maxWidth: .infinity, alignment: .leading)
             .customFocus($globalFocusState.focus, equals: .uuid(inputFieldId))
             .padding(.vertical, 10)
             .padding(.leading, !isMediaAvailable() ? 12 : 0)
@@ -137,6 +139,17 @@ private struct LegacyHardwareReturnTextInputView: UIViewRepresentable {
         uiView.invalidateIntrinsicContentSize()
     }
     
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView: LegacyHardwareReturnTextView, context: Context) -> CGSize? {
+        guard let width = proposal.width, width > 2 else {
+            return nil
+        }
+        let lineHeight = (uiView.font ?? UIFont.preferredFont(forTextStyle: .body)).lineHeight
+        let minimumHeight = lineHeight + uiView.textContainerInset.top + uiView.textContainerInset.bottom
+        let fittingSize = CGSize(width: width, height: .greatestFiniteMagnitude)
+        let size = uiView.sizeThatFits(fittingSize)
+        return CGSize(width: width, height: max(minimumHeight, size.height))
+    }
+    
     func makeCoordinator() -> Coordinator {
         Coordinator(text: $text)
     }
@@ -193,7 +206,7 @@ private final class LegacyHardwareReturnTextView: UITextView {
     
     @objc
     private func handleModifiedReturn(_ sender: UIKeyCommand) {
-        // Ignore modified Return combos in legacy/catalyst path.
+        handleReturnKey(sender)
     }
     
     override func draw(_ rect: CGRect) {
