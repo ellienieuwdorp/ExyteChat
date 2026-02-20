@@ -36,7 +36,8 @@ struct TextInputView: View {
                 .onKeyPress(.return, phases: .down) { keyPress in
                     let modifiers = keyPress.modifiers
                     if modifiers != [] && modifiers != .shift {
-                        return .ignored
+                        // Prevent system submit behavior (e.g. Cmd+Enter stealing focus).
+                        return .handled
                     }
                     if onHardwareReturnKeyPress(modifiers == .shift) {
                         return .handled

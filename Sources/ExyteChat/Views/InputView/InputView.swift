@@ -605,15 +605,14 @@ func shouldSendOnHardwareEnter(
     isSoftwareKeyboardVisible: Bool,
     isShiftModified: Bool
 ) -> Bool {
+    _ = isSoftwareKeyboardVisible
     guard behavior == .sendOnEnterShiftNewline else {
         return false
     }
     guard !isShiftModified else {
         return false
     }
-    // `TextInputView.onSubmit` only fires from the active composer, so an extra
-    // focus check here is both redundant and can race on macOS/Catalyst.
-    return state.canSend && !isSoftwareKeyboardVisible
+    return state.canSend
 }
 
 @MainActor

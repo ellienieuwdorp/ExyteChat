@@ -49,10 +49,10 @@ struct HardwareEnterBehaviorTests {
         )
     }
 
-    @Test("Hardware Enter does not send while software keyboard is visible")
-    func shouldNotSendWhenSoftwareKeyboardIsVisible() {
+    @Test("Hardware Enter send decision does not depend on software keyboard visibility")
+    func shouldSendRegardlessOfSoftwareKeyboardVisibility() {
         #expect(
-            !shouldSendOnHardwareEnter(
+            shouldSendOnHardwareEnter(
                 for: .sendOnEnterShiftNewline,
                 state: .hasTextOrMedia,
                 isSoftwareKeyboardVisible: true,
