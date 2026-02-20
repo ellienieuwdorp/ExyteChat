@@ -21,6 +21,23 @@ struct TextInputView: View {
     var onHardwareReturnKeyPress: (_ isShiftModified: Bool) -> Bool = { _ in false }
     
     var body: some View {
+        #if targetEnvironment(macCatalyst)
+        LegacyHardwareReturnTextInputView(
+            text: $text,
+            placeholder: style == .message ? localization.inputPlaceholder : localization.signatureText,
+            textColor: UIColor(style == .message ? theme.colors.inputText : theme.colors.inputSignatureText),
+            placeholderColor: UIColor(style == .message ? theme.colors.inputPlaceholderText : theme.colors.inputSignaturePlaceholderText),
+            onHardwareReturnKeyPress: onHardwareReturnKeyPress
+        )
+        .customFocus($globalFocusState.focus, equals: .uuid(inputFieldId))
+        .padding(.vertical, 10)
+        .padding(.leading, !isMediaAvailable() ? 12 : 0)
+        .simultaneousGesture(
+            TapGesture().onEnded {
+                globalFocusState.focus = .uuid(inputFieldId)
+            }
+        )
+        #else
         if #available(iOS 17.0, macOS 14.0, tvOS 17.0, *) {
             TextField("", text: $text, prompt: Text(style == .message ? localization.inputPlaceholder : localization.signatureText)
                 .foregroundColor(style == .message ? theme.colors.inputPlaceholderText : theme.colors.inputSignaturePlaceholderText), axis: .vertical)
@@ -75,6 +92,7 @@ struct TextInputView: View {
                 )
             #endif
         }
+        #endif
     }
     
     private func isMediaAvailable() -> Bool {
@@ -148,7 +166,9 @@ private final class LegacyHardwareReturnTextView: UITextView {
     override var keyCommands: [UIKeyCommand]? {
         let returnKey = UIKeyCommand(input: "\r", modifierFlags: [], action: #selector(handleReturnKey(_:)))
         returnKey.wantsPriorityOverSystemBehavior = true
-        return [returnKey]
+        let commandReturnKey = UIKeyCommand(input: "\r", modifierFlags: [.command], action: #selector(handleModifiedReturn(_:)))
+        commandReturnKey.wantsPriorityOverSystemBehavior = true
+        return [returnKey, commandReturnKey]
     }
     
     override var intrinsicContentSize: CGSize {
@@ -164,6 +184,11 @@ private final class LegacyHardwareReturnTextView: UITextView {
             return
         }
         insertText("\n")
+    }
+    
+    @objc
+    private func handleModifiedReturn(_ sender: UIKeyCommand) {
+        // Ignore modified Return combos in legacy/catalyst path.
     }
     
     override func draw(_ rect: CGRect) {
