@@ -21,24 +21,6 @@ struct TextInputView: View {
     var onHardwareReturnKeyPress: (_ isShiftModified: Bool) -> Bool = { _ in false }
     
     var body: some View {
-        #if targetEnvironment(macCatalyst)
-        LegacyHardwareReturnTextInputView(
-            text: $text,
-            placeholder: style == .message ? localization.inputPlaceholder : localization.signatureText,
-            textColor: UIColor(style == .message ? theme.colors.inputText : theme.colors.inputSignatureText),
-            placeholderColor: UIColor(style == .message ? theme.colors.inputPlaceholderText : theme.colors.inputSignaturePlaceholderText),
-            onHardwareReturnKeyPress: onHardwareReturnKeyPress
-        )
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .customFocus($globalFocusState.focus, equals: .uuid(inputFieldId))
-        .padding(.vertical, 10)
-        .padding(.leading, !isMediaAvailable() ? 12 : 0)
-        .simultaneousGesture(
-            TapGesture().onEnded {
-                globalFocusState.focus = .uuid(inputFieldId)
-            }
-        )
-        #else
         if #available(iOS 17.0, macOS 14.0, tvOS 17.0, *) {
             TextField("", text: $text, prompt: Text(style == .message ? localization.inputPlaceholder : localization.signatureText)
                 .foregroundColor(style == .message ? theme.colors.inputPlaceholderText : theme.colors.inputSignaturePlaceholderText), axis: .vertical)
@@ -53,14 +35,22 @@ struct TextInputView: View {
                 )
                 .onKeyPress(.return, phases: .down) { keyPress in
                     let modifiers = keyPress.modifiers
-                    if modifiers != [] && modifiers != .shift {
-                        // Prevent system submit behavior (e.g. Cmd+Enter stealing focus).
+                    if modifiers == [] {
+                        return onHardwareReturnKeyPress(false) ? .handled : .ignored
+                    }
+                    if modifiers == .shift {
+                        return onHardwareReturnKeyPress(true) ? .handled : .ignored
+                    }
+                    if modifiers == .command {
+                        if onHardwareReturnKeyPress(false) {
+                            return .handled
+                        }
+                        // Keep the field focused and insert a newline for Cmd+Enter when send-on-enter is disabled.
+                        text.append("\n")
                         return .handled
                     }
-                    if onHardwareReturnKeyPress(modifiers == .shift) {
-                        return .handled
-                    }
-                    return .ignored
+                    // Prevent system submit behavior for other Return modifiers.
+                    return .handled
                 }
         } else {
             #if canImport(UIKit)
@@ -71,7 +61,6 @@ struct TextInputView: View {
                 placeholderColor: UIColor(style == .message ? theme.colors.inputPlaceholderText : theme.colors.inputSignaturePlaceholderText),
                 onHardwareReturnKeyPress: onHardwareReturnKeyPress
             )
-            .frame(maxWidth: .infinity, alignment: .leading)
             .customFocus($globalFocusState.focus, equals: .uuid(inputFieldId))
             .padding(.vertical, 10)
             .padding(.leading, !isMediaAvailable() ? 12 : 0)
@@ -94,7 +83,6 @@ struct TextInputView: View {
                 )
             #endif
         }
-        #endif
     }
     
     private func isMediaAvailable() -> Bool {
@@ -119,7 +107,7 @@ private struct LegacyHardwareReturnTextInputView: UIViewRepresentable {
         textView.placeholderColor = placeholderColor
         textView.onHardwareReturnKeyPress = { onHardwareReturnKeyPress(false) }
         textView.font = UIFont.preferredFont(forTextStyle: .body)
-        textView.textContainerInset = .zero
+        textView.textContainerInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
         textView.textContainer.lineFragmentPadding = 0
         textView.isScrollEnabled = false
         textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -137,17 +125,6 @@ private struct LegacyHardwareReturnTextInputView: UIViewRepresentable {
         }
         uiView.setNeedsDisplay()
         uiView.invalidateIntrinsicContentSize()
-    }
-    
-    func sizeThatFits(_ proposal: ProposedViewSize, uiView: LegacyHardwareReturnTextView, context: Context) -> CGSize? {
-        guard let width = proposal.width, width > 2 else {
-            return nil
-        }
-        let lineHeight = (uiView.font ?? UIFont.preferredFont(forTextStyle: .body)).lineHeight
-        let minimumHeight = lineHeight + uiView.textContainerInset.top + uiView.textContainerInset.bottom
-        let fittingSize = CGSize(width: width, height: .greatestFiniteMagnitude)
-        let size = uiView.sizeThatFits(fittingSize)
-        return CGSize(width: width, height: max(minimumHeight, size.height))
     }
     
     func makeCoordinator() -> Coordinator {
@@ -179,21 +156,14 @@ private final class LegacyHardwareReturnTextView: UITextView {
     override var keyCommands: [UIKeyCommand]? {
         let returnKey = UIKeyCommand(input: "\r", modifierFlags: [], action: #selector(handleReturnKey(_:)))
         returnKey.wantsPriorityOverSystemBehavior = true
-        let commandReturnKey = UIKeyCommand(input: "\r", modifierFlags: [.command], action: #selector(handleModifiedReturn(_:)))
-        commandReturnKey.wantsPriorityOverSystemBehavior = true
-        return [returnKey, commandReturnKey]
+        return [returnKey]
     }
     
     override var intrinsicContentSize: CGSize {
-        let lineHeight = (font ?? UIFont.preferredFont(forTextStyle: .body)).lineHeight
-        let minimumHeight = lineHeight + textContainerInset.top + textContainerInset.bottom
-        guard bounds.width > 2 else {
-            return CGSize(width: UIView.noIntrinsicMetric, height: minimumHeight)
-        }
-        let fittingWidth = bounds.width
+        let fittingWidth = max(bounds.width, 1)
         let fittingSize = CGSize(width: fittingWidth, height: .greatestFiniteMagnitude)
         let size = sizeThatFits(fittingSize)
-        return CGSize(width: UIView.noIntrinsicMetric, height: max(minimumHeight, size.height))
+        return CGSize(width: UIView.noIntrinsicMetric, height: size.height)
     }
     
     @objc
@@ -202,11 +172,6 @@ private final class LegacyHardwareReturnTextView: UITextView {
             return
         }
         insertText("\n")
-    }
-    
-    @objc
-    private func handleModifiedReturn(_ sender: UIKeyCommand) {
-        handleReturnKey(sender)
     }
     
     override func draw(_ rect: CGRect) {
