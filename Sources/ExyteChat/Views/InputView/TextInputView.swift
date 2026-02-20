@@ -117,7 +117,7 @@ private struct LegacyHardwareReturnTextInputView: UIViewRepresentable {
         textView.placeholderColor = placeholderColor
         textView.onHardwareReturnKeyPress = { onHardwareReturnKeyPress(false) }
         textView.font = UIFont.preferredFont(forTextStyle: .body)
-        textView.textContainerInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        textView.textContainerInset = .zero
         textView.textContainer.lineFragmentPadding = 0
         textView.isScrollEnabled = false
         textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -172,10 +172,15 @@ private final class LegacyHardwareReturnTextView: UITextView {
     }
     
     override var intrinsicContentSize: CGSize {
-        let fittingWidth = max(bounds.width, 1)
+        let lineHeight = (font ?? UIFont.preferredFont(forTextStyle: .body)).lineHeight
+        let minimumHeight = lineHeight + textContainerInset.top + textContainerInset.bottom
+        guard bounds.width > 2 else {
+            return CGSize(width: UIView.noIntrinsicMetric, height: minimumHeight)
+        }
+        let fittingWidth = bounds.width
         let fittingSize = CGSize(width: fittingWidth, height: .greatestFiniteMagnitude)
         let size = sizeThatFits(fittingSize)
-        return CGSize(width: UIView.noIntrinsicMetric, height: size.height)
+        return CGSize(width: UIView.noIntrinsicMetric, height: max(minimumHeight, size.height))
     }
     
     @objc
